@@ -38,6 +38,10 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
+// 1. should use error first callback pattern
+// 2. should give an id as a zaro padded string
+// 3. should give the next id based on the count in the file
+// 4. should update the counter file with the next value
 exports.getNextUniqueId = (callback) => {
   // find current counter by reading counter file
   readCounter((err, counter) => {

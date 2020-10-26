@@ -7,10 +7,29 @@ var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
+/**The value that is saved in counter.txt increases with each new todo item created
+The number of files in dataDir increases with each new todo item created
+The contents of each file contain only the text of that todo item*/
+/**
+ * @param {string} text
+ * @param {function} callback: (errror[defaults to null], Object{id and text})
+ * @sideEffect builds a new file in the 'datastore/data' directory
+ */
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  // getNextUniqueId(function(id, _callback) {
+  //  use fs.open(path, callback) to create a new file named with the counter
+  //  callback takes in err and (optional) file
+  //  invoke the callback
+  //}
+  // counter.getNextUniqueId((id, callback) => {
+  counter.getNextUniqueId((error, id) => {
+    fs.writeFile(path.join(exports.dataDir, `${id}.txt`), text, (error) => {
+      if (error) {
+        callback(error);
+      }
+      callback(null, {id, text});
+    });
+  });
 };
 
 exports.readAll = (callback) => {
