@@ -75,26 +75,31 @@ exports.update = (id, text, callback) => {
   }
 };
 
-// exports.update = (id, text, callback) => {
-//   var item = items[id];
-//   if (!item) {
-//     callback(new Error(`No item with id: ${id}`));
-//   } else {
-//     items[id] = text;
-//     callback(null, { id, text });
-//   }
-// };
-
+// fs.unlink(path, callback)
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
+  let idPath = path.join(exports.dataDir, `${id}.txt`);
+  if (fs.existsSync(idPath)) {
+    fs.unlink(idPath, (error) => {
+      if (error) {
+        callback(error);
+      }
+      callback();
+    });
   } else {
-    callback();
+    callback(new Error(`No item with id: ${id}`));
   }
 };
+
+// exports.delete = (id, callback) => {
+//   var item = items[id];
+//   delete items[id];
+//   if (!item) {
+//     // report an error if item not found
+//     callback(new Error(`No item with id: ${id}`));
+//   } else {
+//     callback();
+//   }
+// };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
