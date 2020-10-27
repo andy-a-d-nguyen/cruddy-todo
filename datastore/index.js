@@ -7,6 +7,10 @@ var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
+// 1. should create a file for each todo
+// 2. should use the generated unique id as the file name
+// 3. should only save to do text contents in a file
+// 4. should pass a todo object to the callback on success
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId();
   items[id] = text;
@@ -52,10 +56,15 @@ exports.delete = (id, callback) => {
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
+// path.join() method joins all given path segments together using the platform-specific separator as a delimiter, then normalizes the resulting path.
+// normalize: removes '..' and '.' from path
+// 'data': where data is being stored
 exports.dataDir = path.join(__dirname, 'data');
 
 exports.initialize = () => {
+  // fs.existsSync(path) : Returns true if the path exists, false otherwise.
   if (!fs.existsSync(exports.dataDir)) {
+    // fs.mkdirSync(path, options) : Synchronously creates a directory
     fs.mkdirSync(exports.dataDir);
   }
 };
