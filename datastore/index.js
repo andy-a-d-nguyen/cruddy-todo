@@ -59,16 +59,31 @@ exports.readOne = (id, callback) => {
   });
 };
 
-
+// fs.existsSync(path)
+//
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
+  let idPath = path.join(exports.dataDir, `${id}.txt`);
+  if (fs.existsSync(idPath)) {
+    fs.writeFile(idPath, text, (error) => {
+      if (error) {
+        callback(error);
+      }
+      callback(null, {id, text});
+    });
   } else {
-    items[id] = text;
-    callback(null, { id, text });
+    callback(new Error(`No item with id: ${id}`));
   }
 };
+
+// exports.update = (id, text, callback) => {
+//   var item = items[id];
+//   if (!item) {
+//     callback(new Error(`No item with id: ${id}`));
+//   } else {
+//     items[id] = text;
+//     callback(null, { id, text });
+//   }
+// };
 
 exports.delete = (id, callback) => {
   var item = items[id];
