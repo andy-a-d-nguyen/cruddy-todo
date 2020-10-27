@@ -49,21 +49,16 @@ exports.readAll = (callback) => {
   });
 };
 
-// exports.readAll = (callback) => {
-//   var data = _.map(items, (text, id) => {
-//     return { id, text };
-//   });
-//   callback(null, data);
-// };
-
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  fs.readFile(path.join(exports.dataDir, `${id}.txt`), 'utf8', (error, text) => {
+    if (error) {
+      callback(error);
+    } else {
+      callback(null, { id, text });
+    }
+  });
 };
+
 
 exports.update = (id, text, callback) => {
   var item = items[id];
