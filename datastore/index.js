@@ -103,10 +103,15 @@ exports.delete = (id, callback) => {
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
+// path.join() method joins all given path segments together using the platform-specific separator as a delimiter, then normalizes the resulting path.
+// normalize: removes '..' and '.' from path
+// 'data': where data is being stored
 exports.dataDir = path.join(__dirname, 'data');
 
 exports.initialize = () => {
+  // fs.existsSync(path) : Returns true if the path exists, false otherwise.
   if (!fs.existsSync(exports.dataDir)) {
+    // fs.mkdirSync(path, options) : Synchronously creates a directory
     fs.mkdirSync(exports.dataDir);
   }
 };
