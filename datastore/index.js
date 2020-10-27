@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
-
+const Promise = require('bluebird');
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
@@ -32,22 +32,69 @@ exports.create = (text, callback) => {
   });
 };
 
-// fs.readFile(path[, options], callback(error, data))
-// fs.readdir(path[, options], callback(error, files)), files is a string array
-// get an array of the names of all the files in exports.dataDir:
-//  for each of those files, build the expected todo list:
-// const expectedTodoList = [{ id: '00001', text: '00001' }, { id: '00002', text: '00002' }];
-// invoke the callback function with (error, todoList) --> callee will respond to client
+// exports.readAll = (callback) => {
+//   fs.readdir(exports.dataDir, (error, files) => {
+//     var todoList = files.map((file) => {
+//       file = file.slice(0, file.indexOf('.txt'));
+//       return {id: file, text: file};
+//     });
+//     callback(error, todoList);
+//   });
+// };
+
+// exports.readAll = (callback) => {
+//   return fs.readdir(exports.dataDir)
+//     .then((files) => files.map(file => {
+//       return fsPromises.readFile(exports.dataDir + `${file}.txt`);
+//     }))
+//     .then(() => Promise.all())
+//     .catch((error) => console.log('Error in datastore/index.js::readDirAsync'));
+// };
 
 exports.readAll = (callback) => {
-  fs.readdir(exports.dataDir, {withFileTypes: false}, (error, files) => {
-    var todoList = files.map((file) => {
-      file = file.slice(0, file.indexOf('.txt'));
-      return {id: file, text: file};
-    });
-    callback(error, todoList);
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      throw ('error');
+    } else {
+      var data = files.map((file) => {
+        var id = file.slice(0, file.indexOf('.txt'));
+        var filepath = path.join(exports.dataDir, `${id}.txt`);
+        return fs.promises.readFile(filepath, 'utf8')
+          .then((fileData) => {
+            return {
+              id: id,
+              text: fileData
+            };
+          });
+      });
+      Promise.all(data)
+        .then((todos) => {
+          if (err) {
+            callback(err);
+          } else {
+            callback(null, todos);
+          }
+        });
+    }
   });
 };
+
+/**
+ * obtain a list of all the files
+ * then, assemble and return an array of objects
+ * iff error, log to consle
+ */
+// var preaddir = Promise.promisify(fs.readdir);
+// exports.readAll = callback => {
+//   return preaddir(exports.dataDir)
+//     .then(files =>
+//       files.map(file => ({
+//         file: fs.readFileSync(exports.dataDir + `${file}.txt`, 'utf8')
+//       })
+//       )
+//     )
+//     .catch();
+// };
 
 exports.readOne = (id, callback) => {
   fs.readFile(path.join(exports.dataDir, `${id}.txt`), 'utf8', (error, text) => {
